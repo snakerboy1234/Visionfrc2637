@@ -2,5 +2,12 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="Jvison/src"/>
+	<classpathentry kind="lib" path="C:/Users/me/Desktop/temp storage/Imshow.jar"/>
+	<classpathentry kind="lib" path="C:/Users/me/Desktop/temp storage/opencv-340.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Users/me/Desktop/temp storage/opencv/build/java/x64"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/OpenCV"/>
 	<classpathentry kind="output" path="Jvison/bin"/>
 </classpath>

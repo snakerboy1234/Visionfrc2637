@@ -1,12 +1,13 @@
 package vision;
 
-import java.util.ArrayList;
-
 import org.opencv.core.Core;
 import org.opencv.core.KeyPoint;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfKeyPoint;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.VideoWriter;
 import com.atul.JavaOpenCV.Imshow;
@@ -34,19 +35,20 @@ public class GripMain {
 		Imshow circleShow = new Imshow("imageCircle");
 		Imshow blurCircle = new Imshow("blurCircle");
 				
-		
+		Mat imageCircle;
 		Mat source;
 		//KeyPoint blobList;
-		ArrayList<KeyPoint> blobList = new ArrayList<KeyPoint>();
+		//ArrayList<KeyPoint> blobList = new ArrayList<KeyPoint>();
 		
 		GripPipeline detectYellowCube = new GripPipeline();
 		
 		VideoCapture cap = new VideoCapture();
 		
-		cap.open(1);
+		cap.open(0);
 		
-		if(!cap.equals(1)) {
-			System.out.println("Error opening vido file");
+		
+		if(!cap.equals(0)) {
+			System.out.println("Error opening video file");
 			
 		}
 		
@@ -83,7 +85,7 @@ public class GripMain {
 			if(frame.empty())
 				break;
 			
-			video.write(frame);
+			//video.write(frame);
 			
 			++framesProcessed;
 			
@@ -92,48 +94,42 @@ public class GripMain {
 			sizedFrame = detectYellowCube.resizeImageOutput();
 			blurOutput = detectYellowCube.blurOutput();
 			
-			//sizedShow.showImage(sizedFrame);
-			blurShow.showImage(blurOutput);
+			MatOfKeyPoint blobList = detectYellowCube.findBlobsOutput();
+			KeyPoint[] blobArray = blobList.toArray();
 			
-			MatOfKeyPoint tempBlobList = detectYellowCube.findBlobsOutput();
-			
-			if(!blobList.isEmpty()) {
-				measX = blobList.get(0).pt.x;
-				measY = blobList.get(0).pt.y;
+			if(!(blobArray.length == 0)) {
 				
-				objRadius = blobList.get(0).size * .6;
+				measX = blobArray[0].pt.x;
+				measY = blobArray[0].pt.y;
+				
+				objRadius = blobArray[0].size * .6;
 				double opposite = measX - .5*sizedFrameWidth;
 				double adjacent = heightIsosceles;
 				
 				heading = RAD2DEG * Math.atan(opposite/adjacent);
 				opposite = measY - 0.5*sizedFrameHeight;
 				pitch = RAD2DEG *Math.atan(opposite/adjacent);
-				distance = CUBE_DIAMETER_INCHES * heightIsosceles/(2*objRadius);
+				distance = CUBE_DIAMETER_INCHES * heightIsosceles/(objRadius);
 				
 				System.out.println("( " + framesProcessed + " )( " + measX + ", " + measY + " )," + objRadius + " [ " + heading + ", " + distance + " ]");
 				
-				// Draw a circle
-				//Mat imageCircle = sizedFrame.clone();
-				//circle(imageCircle, new Point(measX, measY), objRadius, new Scalar(255, 0, 0), 1, 16);
-				//circleShow.showImage(imageCircle);
+				//Draw a circle
+				/*
+				imageCircle = sizedFrame.clone();
+				Imgproc.circle(imageCircle, new Point(measX, measY), (int) objRadius, new Scalar(255, 0, 0), 1, 16, 15);
+			    circleShow.showImage(imageCircle);
 				
-				//imageCircle = blurOutput.clone();
-				//circle(imageCircle, new Point(measX, measY), objRadius, new Scalar(255, 0, 0), 1, 16);
-				//blurCircle.showImage(imageCircle);
-				
+				imageCircle = blurOutput.clone();
+				Imgproc.circle(imageCircle, new Point(measX, measY), (int) objRadius, new Scalar(255, 0, 0), 1, 16, 15);
+				blurCircle.showImage(imageCircle);
+				*/
 			}	else {
 				System.out.println("( " + framesProcessed + " ) No Blobs");
 			}
-			/*
-			c.wait(500);
-			if(c == 27) {
-				break;
-				
-			}*/
 		
 		}
 		
-		System.out.println("Done!\n");
+		System.out.println("Done!/n");
 
 	}
 

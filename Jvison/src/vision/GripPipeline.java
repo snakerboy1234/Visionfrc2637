@@ -4,7 +4,6 @@ import java.io.File;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import edu.wpi.first.wpilibj.vision.VisionPipeline;
 
 import org.opencv.core.*;
 import org.opencv.features2d.FeatureDetector;
@@ -18,7 +17,7 @@ import org.opencv.imgproc.*;
 * @author GRIP
 */
 @SuppressWarnings("deprecation")
-public class GripPipeline implements VisionPipeline {
+public class GripPipeline{
 
 	//Outputs
 	private Mat resizeImageOutput = new Mat();
@@ -34,11 +33,12 @@ public class GripPipeline implements VisionPipeline {
 	/**
 	 * This is the primary method that runs the entire pipeline and updates the outputs.
 	 */
-	@Override	public void process(Mat source0) {
+	public void process(Mat source0) {
+		
 		// Step Resize_Image0:
 		Mat resizeImageInput = source0;
-		double resizeImageWidth = 460.0;
-		double resizeImageHeight = 480.0;
+		double resizeImageWidth = 480.0;
+		double resizeImageHeight = 270.0;
 		int resizeImageInterpolation = Imgproc.INTER_CUBIC;
 		resizeImage(resizeImageInput, resizeImageWidth, resizeImageHeight, resizeImageInterpolation, resizeImageOutput);
 
