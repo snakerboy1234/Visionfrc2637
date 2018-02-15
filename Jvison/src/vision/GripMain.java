@@ -1,5 +1,7 @@
 package vision;
 
+import java.awt.image.BufferedImage;
+
 import org.opencv.core.Core;
 import org.opencv.core.KeyPoint;
 import org.opencv.core.Mat;
@@ -11,6 +13,7 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.VideoWriter;
 import com.atul.JavaOpenCV.Imshow;
+import org.opencv.core.Rect;
 
 public class GripMain {
 
@@ -30,13 +33,16 @@ public class GripMain {
 		double heightIsosceles;
 		double hypotenuseSquared;
 		
+		Improc projectImage = new Improc();
+		/*
 		Imshow sizedShow = new Imshow("SizedFrame");
 		Imshow blurShow = new Imshow("BlurFrame");
 		Imshow circleShow = new Imshow("imageCircle");
 		Imshow blurCircle = new Imshow("blurCircle");
-				
+			*/	
 		Mat imageCircle;
 		Mat source;
+		Mat squareToMat;
 		//KeyPoint blobList;
 		//ArrayList<KeyPoint> blobList = new ArrayList<KeyPoint>();
 		
@@ -68,6 +74,22 @@ public class GripMain {
 		
 		VideoWriter video = new VideoWriter("outcpp.avi", VideoWriter.fourcc('M','J','P','G'), 10, new Size(sizedFrameWidth*4, sizedFrameHeight*4));
 		
+		// Create the square that will be used to outline our blobs
+		
+		
+		Rect square = new Rect((int) 0,(int) 0,(int) 1000,(int) 1000);
+		//Mat squareImg  = new Mat();
+		//Mat squareToMat = new Mat(squareImg,square);
+		
+		Mat sizedFrame;
+		Mat blurOutput;
+		Mat frame;
+		
+		MatOfKeyPoint blobList;
+		KeyPoint[] blobArray;
+		
+		BufferedImage rectangle;
+		
 		int framesProcessed = 0;
 		while(true) {
 			double measX = 1;
@@ -77,13 +99,17 @@ public class GripMain {
 			double pitch;
 			double distance;
 			
-			Mat sizedFrame = new Mat();
-			Mat blurOutput = new Mat();
-			Mat frame = new Mat();
+			sizedFrame = new Mat();
+			blurOutput = new Mat();
+			frame = new Mat();
 			cap.retrieve(frame);
 			
+			
 			if(frame.empty())
-				break;
+			{
+				//break;
+				continue;
+			}
 			
 			//video.write(frame);
 			
@@ -94,8 +120,8 @@ public class GripMain {
 			sizedFrame = detectYellowCube.resizeImageOutput();
 			blurOutput = detectYellowCube.blurOutput();
 			
-			MatOfKeyPoint blobList = detectYellowCube.findBlobsOutput();
-			KeyPoint[] blobArray = blobList.toArray();
+			blobList = detectYellowCube.findBlobsOutput();
+			blobArray = blobList.toArray();
 			
 			if(!(blobArray.length == 0)) {
 				
@@ -113,24 +139,38 @@ public class GripMain {
 				
 				System.out.println("( " + framesProcessed + " )( " + measX + ", " + measY + " )," + objRadius + " [ " + heading + ", " + distance + " ]");
 				
-				//Draw a circle
-				/*
-				imageCircle = sizedFrame.clone();
-				Imgproc.circle(imageCircle, new Point(measX, measY), (int) objRadius, new Scalar(255, 0, 0), 1, 16, 15);
-			    circleShow.showImage(imageCircle);
+				//BufferedImage blurImage = projectImage.Mat2BufferedImage(blurOutput);
 				
-				imageCircle = blurOutput.clone();
-				Imgproc.circle(imageCircle, new Point(measX, measY), (int) objRadius, new Scalar(255, 0, 0), 1, 16, 15);
-				blurCircle.showImage(imageCircle);
+				//projectImage.displayImage(blurImage);
+				
+				//Draw a circle
+				
+				
+				imageCircle = sizedFrame.clone();
+				square.x = (int)measX;
+				square.y = (int)measY;
+				square.height = (int) objRadius;
+				square.width = (int) objRadius;
+				
+				squareToMat = new Mat(sizedFrame,square);
+				
+				 
+				rectangle = Improc.Mat2BufferedImage(squareToMat);
+				projectImage.displayImage(rectangle);
+				
+				/*imageCircle = blurOutput.clone();
+				Mat square1 = new Mat(imageCircle,square);
+				BufferedImage circle2 = projectImage.Mat2BufferedImage(imageCircle);
+				projectImage.displayImage(circle2);
+				//blurCircle.showImage(imageCircle);
 				*/
-			}	else {
+			}	
+			else {
 				System.out.println("( " + framesProcessed + " ) No Blobs");
 			}
 		
 		}
 		
-		System.out.println("Done!/n");
-
+		//System.out.println("Done!\n");
 	}
-
 }

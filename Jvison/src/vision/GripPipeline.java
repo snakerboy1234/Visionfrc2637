@@ -224,8 +224,7 @@ public class GripPipeline{
 	 * @param darkBlobs The boolean that determines if light or dark blobs are found.
 	 * @param blobList The output where the MatOfKeyPoint is stored.
 	 */
-	private void findBlobs(Mat input, double minArea, double[] circularity,
-		Boolean darkBlobs, MatOfKeyPoint blobList) {
+	private void findBlobs(Mat input, double minArea, double[] circularity, Boolean darkBlobs, MatOfKeyPoint blobList) {
 		FeatureDetector blobDet = FeatureDetector.create(FeatureDetector.SIMPLEBLOB);
 		try {
 			File tempFile = File.createTempFile("config", ".xml");

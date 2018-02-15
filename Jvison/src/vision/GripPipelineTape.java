@@ -98,8 +98,7 @@ public class GripPipelineTape {
 		 * @param interpolation The type of interpolation.
 		 * @param output The image in which to store the output.
 		 */
-		private void resizeImage(Mat input, double width, double height,
-			int interpolation, Mat output) {
+		private void resizeImage(Mat input, double width, double height, int interpolation, Mat output) {
 			Imgproc.resize(input, output, new Size(width, height), 0.0, 0.0, interpolation);
 		}
 
@@ -112,11 +111,9 @@ public class GripPipelineTape {
 		 * @param lum The min and max luminance
 		 * @param output The image in which to store the output.
 		 */
-		private void hslThreshold(Mat input, double[] hue, double[] sat, double[] lum,
-			Mat out) {
+		private void hslThreshold(Mat input, double[] hue, double[] sat, double[] lum, Mat out) {
 			Imgproc.cvtColor(input, out, Imgproc.COLOR_BGR2HLS);
-			Core.inRange(out, new Scalar(hue[0], lum[0], sat[0]),
-				new Scalar(hue[1], lum[1], sat[1]), out);
+			Core.inRange(out, new Scalar(hue[0], lum[0], sat[0]),new Scalar(hue[1], lum[1], sat[1]), out);
 		}
 
 		/**
@@ -126,8 +123,7 @@ public class GripPipelineTape {
 		 * @param maskSize the size of the mask.
 		 * @param output The image in which to store the output.
 		 */
-		private void findContours(Mat input, boolean externalOnly,
-			List<MatOfPoint> contours) {
+		private void findContours(Mat input, boolean externalOnly, List<MatOfPoint> contours) {
 			Mat hierarchy = new Mat();
 			contours.clear();
 			int mode;
@@ -158,34 +154,51 @@ public class GripPipelineTape {
 		 * @param minRatio minimum ratio of width to height
 		 * @param maxRatio maximum ratio of width to height
 		 */
-		private void filterContours(List<MatOfPoint> inputContours, double minArea,
-			double minPerimeter, double minWidth, double maxWidth, double minHeight, double
-			maxHeight, double[] solidity, double maxVertexCount, double minVertexCount, double
-			minRatio, double maxRatio, List<MatOfPoint> output) {
+		private void filterContours(List<MatOfPoint> inputContours, double minArea, double minPerimeter, double minWidth, double maxWidth, double minHeight, double maxHeight, double[] solidity, double maxVertexCount, double minVertexCount, double minRatio, double maxRatio, List<MatOfPoint> output) {
 			final MatOfInt hull = new MatOfInt();
 			output.clear();
 			//operation
 			for (int i = 0; i < inputContours.size(); i++) {
+				
 				final MatOfPoint contour = inputContours.get(i);
 				final Rect bb = Imgproc.boundingRect(contour);
-				if (bb.width < minWidth || bb.width > maxWidth) continue;
-				if (bb.height < minHeight || bb.height > maxHeight) continue;
+				
+				if (bb.width < minWidth || bb.width > maxWidth) 
+					continue;
+				
+				if (bb.height < minHeight || bb.height > maxHeight)
+					continue;
+				
 				final double area = Imgproc.contourArea(contour);
+				
 				if (area < minArea) continue;
-				if (Imgproc.arcLength(new MatOfPoint2f(contour.toArray()), true) < minPerimeter) continue;
+				
+				if (Imgproc.arcLength(new MatOfPoint2f(contour.toArray()), true) < minPerimeter) 
+					continue;
+				
 				Imgproc.convexHull(contour, hull);
 				MatOfPoint mopHull = new MatOfPoint();
 				mopHull.create((int) hull.size().height, 1, CvType.CV_32SC2);
+				
 				for (int j = 0; j < hull.size().height; j++) {
 					int index = (int)hull.get(j, 0)[0];
 					double[] point = new double[] { contour.get(index, 0)[0], contour.get(index, 0)[1]};
 					mopHull.put(j, 0, point);
 				}
+				
 				final double solid = 100 * area / Imgproc.contourArea(mopHull);
-				if (solid < solidity[0] || solid > solidity[1]) continue;
-				if (contour.rows() < minVertexCount || contour.rows() > maxVertexCount)	continue;
+				
+				if (solid < solidity[0] || solid > solidity[1]) 
+					continue;
+				
+				if (contour.rows() < minVertexCount || contour.rows() > maxVertexCount)	
+					continue;
+				
 				final double ratio = bb.width / (double)bb.height;
-				if (ratio < minRatio || ratio > maxRatio) continue;
+				
+				if (ratio < minRatio || ratio > maxRatio) 
+					continue;
+				
 				output.add(contour);
 			}
 		}
