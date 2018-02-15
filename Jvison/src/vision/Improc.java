@@ -8,12 +8,11 @@ import java.awt.image.*;
 
 public class Improc
 {
-	private static JFrame frame;
-	private	static JLabel lbl;
+	public JFrame frame;
+	public JLabel lbl;
     
     public Improc()
     {
-    	 
          System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
          initComponents();
     }
@@ -21,7 +20,10 @@ public class Improc
     private void initComponents()
     {
         frame = new JFrame();
-        //frame.setLayout(new FlowLayout());
+        lbl = new JLabel();
+        
+        frame.setLayout(new FlowLayout());
+        frame.add((new JPanel()).add(lbl));
                
         frame.setMinimumSize(new Dimension(800, 600));
         frame.setVisible(true);
@@ -46,13 +48,8 @@ public class Improc
 
     public void displayImage(Image img)
     {   
-    	if (!img.)
-    	{
-    		lbl = new  JLabel(new ImageIcon(img));
-    		frame.add(lbl);
-    	}
     	//icon.setImage(img);
-    	//lbl.setIcon(icon);
+    	lbl.setIcon(new ImageIcon(img));
         //frame.setSize(img.getWidth(null)+50, img.getHeight(null)+50);     
     }
 

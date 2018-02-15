@@ -7,13 +7,11 @@ import org.opencv.core.KeyPoint;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfKeyPoint;
 import org.opencv.core.Point;
-import org.opencv.core.Scalar;
 import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.VideoWriter;
-import com.atul.JavaOpenCV.Imshow;
 import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
 
 public class GripMain {
 
@@ -32,17 +30,22 @@ public class GripMain {
 		double legLenthIsosceles;
 		double heightIsosceles;
 		double hypotenuseSquared;
+	
 		
+		//ImageWindow projectImage = new ImageWindow("Vision", ImageWindow.WINDOW_NORMAL);
+		//projectImage.setFrameLabelVisible(jframe, lbl);
+	
 		Improc projectImage = new Improc();
+		
 		/*
 		Imshow sizedShow = new Imshow("SizedFrame");
 		Imshow blurShow = new Imshow("BlurFrame");
 		Imshow circleShow = new Imshow("imageCircle");
 		Imshow blurCircle = new Imshow("blurCircle");
 			*/	
-		Mat imageCircle;
+		Mat imageCircle = new Mat();
 		Mat source;
-		Mat squareToMat;
+		Mat squareToMat = new Mat();
 		//KeyPoint blobList;
 		//ArrayList<KeyPoint> blobList = new ArrayList<KeyPoint>();
 		
@@ -77,7 +80,7 @@ public class GripMain {
 		// Create the square that will be used to outline our blobs
 		
 		
-		Rect square = new Rect((int) 0,(int) 0,(int) 1000,(int) 1000);
+		Rect square = new Rect((int) 1,(int) 1,(int) 1,(int) 1);
 		//Mat squareImg  = new Mat();
 		//Mat squareToMat = new Mat(squareImg,square);
 		
@@ -99,7 +102,7 @@ public class GripMain {
 			double pitch;
 			double distance;
 			
-			sizedFrame = new Mat();
+			//sizedFrame = new Mat();
 			blurOutput = new Mat();
 			frame = new Mat();
 			cap.retrieve(frame);
@@ -145,25 +148,27 @@ public class GripMain {
 				
 				//Draw a circle
 				
+				blurOutput.copyTo(imageCircle);
 				
-				imageCircle = sizedFrame.clone();
 				square.x = (int)measX;
 				square.y = (int)measY;
 				square.height = (int) objRadius;
 				square.width = (int) objRadius;
 				
-				squareToMat = new Mat(sizedFrame,square);
+				org.opencv.imgproc.Imgproc.circle(imageCircle, new Point(measX, measY), (int)(objRadius / 2), new Scalar(0, 255, 0));
 				
-				 
-				rectangle = Improc.Mat2BufferedImage(squareToMat);
+				rectangle = Improc.Mat2BufferedImage(imageCircle);
+				
 				projectImage.displayImage(rectangle);
 				
-				/*imageCircle = blurOutput.clone();
+				/*
+				imageCircle = blurOutput.clone();
 				Mat square1 = new Mat(imageCircle,square);
 				BufferedImage circle2 = projectImage.Mat2BufferedImage(imageCircle);
 				projectImage.displayImage(circle2);
 				//blurCircle.showImage(imageCircle);
-				*/
+				 */
+				
 			}	
 			else {
 				System.out.println("( " + framesProcessed + " ) No Blobs");
