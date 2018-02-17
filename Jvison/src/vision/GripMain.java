@@ -22,6 +22,8 @@ public class GripMain {
 	private static final double CUBE_DIAMETER_INCHES = 17;
 	private static final double VIEW_ANGLE_DIAGONAL_DEGREES = 78;
 	private static final double VIEW_ANGLE_DIAGONAL_RADIANS = VIEW_ANGLE_DIAGONAL_DEGREES * DEG2RAD;
+	
+	private static final double MAX_DISTANCE = 120;
 
 	public static void main(String[] arg) {
 		
@@ -30,6 +32,7 @@ public class GripMain {
 		double legLenthIsosceles;
 		double heightIsosceles;
 		double hypotenuseSquared;
+		double distancePlaceHolder;
 	
 		
 		//ImageWindow projectImage = new ImageWindow("Vision", ImageWindow.WINDOW_NORMAL);
@@ -93,14 +96,18 @@ public class GripMain {
 		
 		BufferedImage rectangle;
 		
+		double measX, measY, objRadius, heading, pitch, distance;
+		
+		
 		int framesProcessed = 0;
+		int smallBlobCount = 0;
+		int bigBlobCount = 0;
+		
 		while(true) {
-			double measX = 1;
-			double measY = 1;
-			double objRadius = 1;
-			double heading;
-			double pitch;
-			double distance;
+			measX = 1;
+			measY = 1;
+			objRadius = 1;
+			
 			
 			//sizedFrame = new Mat();
 			blurOutput = new Mat();
@@ -128,10 +135,12 @@ public class GripMain {
 			
 			if(!(blobArray.length == 0)) {
 				
-				measX = blobArray[0].pt.x;
-				measY = blobArray[0].pt.y;
+				KeyPoint blob = getLargestBlob(blobArray);
 				
-				objRadius = blobArray[0].size * .6;
+				measX = blob.pt.x;
+				measY = blob.pt.y;
+				
+				objRadius = blob.size * .6;
 				double opposite = measX - .5*sizedFrameWidth;
 				double adjacent = heightIsosceles;
 				
@@ -140,8 +149,35 @@ public class GripMain {
 				pitch = RAD2DEG *Math.atan(opposite/adjacent);
 				distance = CUBE_DIAMETER_INCHES * heightIsosceles/(objRadius);
 				
-				System.out.println("( " + framesProcessed + " )( " + measX + ", " + measY + " )," + objRadius + " [ " + heading + ", " + distance + " ]");
+				//System.out.println("( " + framesProcessed + " )( " + measX + ", " + measY + " )," + objRadius + " [ " + heading + ", " + distance + " ]");
+				/*
+				System.out.println(String.format("%5s: ( %8.2f, %8.2f, %8.2f),  [ %7.2f, %7.2f ]", Integer.toString(framesProcessed), 
+																									measX, 
+																									measY, 
+																									objRadius, 
+																									heading, 
+																									distance));
+				*/
+				if (blob.size < 10)
+				{
+					smallBlobCount++;
+				}
+				else
+				{
+					bigBlobCount++;
+				}
 				
+				System.out.println(String.format("%5s: ( %8.2f, %8.2f, %8.2f),  [ %7.2f, %7.2f ] small: %5s big: %5s frequency: %5.2f%s", 
+													Integer.toString(framesProcessed), 
+													measX, 
+													measY, 
+													objRadius, 
+													heading, 
+													distance,
+													smallBlobCount,
+													bigBlobCount,
+													100*(((double)bigBlobCount)/((double)framesProcessed)),
+													"%"));
 				//BufferedImage blurImage = projectImage.Mat2BufferedImage(blurOutput);
 				
 				//projectImage.displayImage(blurImage);
@@ -155,7 +191,7 @@ public class GripMain {
 				square.height = (int) objRadius;
 				square.width = (int) objRadius;
 				
-				org.opencv.imgproc.Imgproc.circle(imageCircle, new Point(measX, measY), (int)(objRadius / 2), new Scalar(0, 255, 0));
+				org.opencv.imgproc.Imgproc.circle(imageCircle, new Point(measX, measY), (int)(objRadius), new Scalar(98, 244, 66));
 				
 				rectangle = Improc.Mat2BufferedImage(imageCircle);
 				
@@ -168,7 +204,6 @@ public class GripMain {
 				projectImage.displayImage(circle2);
 				//blurCircle.showImage(imageCircle);
 				 */
-				
 			}	
 			else {
 				System.out.println("( " + framesProcessed + " ) No Blobs");
@@ -177,5 +212,21 @@ public class GripMain {
 		}
 		
 		//System.out.println("Done!\n");
+	}
+	
+	
+	public static KeyPoint getLargestBlob(KeyPoint[] blobList)
+	{
+		KeyPoint largest = blobList[0];
+		
+		for (KeyPoint kp : blobList)
+		{
+			if (largest.size < kp.size)
+			{
+				largest = kp;
+			}
+		}
+		
+		return largest;
 	}
 }

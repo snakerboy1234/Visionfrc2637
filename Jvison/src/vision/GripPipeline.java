@@ -226,6 +226,7 @@ public class GripPipeline{
 	 */
 	private void findBlobs(Mat input, double minArea, double[] circularity, Boolean darkBlobs, MatOfKeyPoint blobList) {
 		FeatureDetector blobDet = FeatureDetector.create(FeatureDetector.SIMPLEBLOB);
+		
 		try {
 			File tempFile = File.createTempFile("config", ".xml");
 

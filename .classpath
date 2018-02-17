@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="src" path="Jvison/src"/>
+	<classpathentry excluding="vision/GripPipelineNew.java" kind="src" path="Jvison/src"/>
 	<classpathentry kind="lib" path="C:/Users/me/Desktop/temp storage/Imshow.jar"/>
 	<classpathentry kind="lib" path="C:/Users/me/Desktop/temp storage/opencv-340.jar">
 		<attributes>
