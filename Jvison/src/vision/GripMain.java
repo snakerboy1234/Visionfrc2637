@@ -13,6 +13,7 @@ import org.opencv.videoio.VideoWriter;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 
+
 public class GripMain {
 
 	private static final double PI = Math.PI;
@@ -25,6 +26,10 @@ public class GripMain {
 	
 	private static final double MAX_DISTANCE = 120;
 
+	public static long startTime;
+	public static long endTime;
+	public static long timeTaken;
+	
 	public static void main(String[] arg) {
 		
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -33,7 +38,6 @@ public class GripMain {
 		double heightIsosceles;
 		double hypotenuseSquared;
 		double distancePlaceHolder;
-	
 		
 		//ImageWindow projectImage = new ImageWindow("Vision", ImageWindow.WINDOW_NORMAL);
 		//projectImage.setFrameLabelVisible(jframe, lbl);
@@ -49,6 +53,7 @@ public class GripMain {
 		Mat imageCircle = new Mat();
 		Mat source;
 		Mat squareToMat = new Mat();
+		
 		//KeyPoint blobList;
 		//ArrayList<KeyPoint> blobList = new ArrayList<KeyPoint>();
 		
@@ -104,6 +109,9 @@ public class GripMain {
 		int bigBlobCount = 0;
 		
 		while(true) {
+			
+			startTime = System.currentTimeMillis();
+			
 			measX = 1;
 			measY = 1;
 			objRadius = 1;
@@ -140,7 +148,7 @@ public class GripMain {
 				measX = blob.pt.x;
 				measY = blob.pt.y;
 				
-				objRadius = blob.size * .6;
+				objRadius = blob.size * .625;
 				double opposite = measX - .5*sizedFrameWidth;
 				double adjacent = heightIsosceles;
 				
@@ -183,7 +191,7 @@ public class GripMain {
 				//projectImage.displayImage(blurImage);
 				
 				//Draw a circle
-				
+			
 				blurOutput.copyTo(imageCircle);
 				
 				square.x = (int)measX;
@@ -196,6 +204,12 @@ public class GripMain {
 				rectangle = Improc.Mat2BufferedImage(imageCircle);
 				
 				projectImage.displayImage(rectangle);
+				
+				endTime = System.currentTimeMillis();
+				
+				timeTaken = endTime - startTime;
+				
+				System.out.println("That took " + timeTaken + "seconds");
 				
 				/*
 				imageCircle = blurOutput.clone();

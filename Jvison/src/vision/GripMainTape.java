@@ -66,10 +66,13 @@ public class GripMainTape {
 		
 		int sizedFrameHeight = 270;
 		
+		//Change the math in order to get measurements for midpoint
+		/*
 		hypotenuseSquared =  sizedFrameWidth*sizedFrameWidth + sizedFrameHeight*sizedFrameHeight;
 		
 		legLenthIsosceles = Math.sqrt(hypotenuseSquared/(2*(1.0-Math.cos(VIEW_ANGLE_DIAGONAL_DEGREES))));
 		heightIsosceles = legLenthIsosceles*Math.cos(0.5*VIEW_ANGLE_DIAGONAL_RADIANS);
+		*/
 		
 		VideoWriter video = new VideoWriter("outcpp.avi", VideoWriter.fourcc('M','J','P','G'), 10, new Size(sizedFrameWidth*4, sizedFrameHeight*4));
 		
@@ -87,6 +90,7 @@ public class GripMainTape {
 			Mat frame = new Mat();
 			cap.retrieve(frame);
 			
+			
 			if(frame.empty())
 				break;
 			
@@ -98,6 +102,7 @@ public class GripMainTape {
 			
 			sizedFrame = detectReflectiveTape.resizeImageOutput();
 			contourOutput = detectReflectiveTape.findContoursOutput();
+			
 			
 			
 			
