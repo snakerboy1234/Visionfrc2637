@@ -1,6 +1,7 @@
 package vision;
 
 import java.awt.image.BufferedImage;
+import java.lang.Math;
 
 import org.opencv.core.Core;
 import org.opencv.core.KeyPoint;
@@ -12,7 +13,6 @@ import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.VideoWriter;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
-
 
 public class GripMain {
 
@@ -53,6 +53,8 @@ public class GripMain {
 		Mat imageCircle = new Mat();
 		Mat source;
 		Mat squareToMat = new Mat();
+		
+		DerivativeOfVision derivative = new DerivativeOfVision();
 		
 		//KeyPoint blobList;
 		//ArrayList<KeyPoint> blobList = new ArrayList<KeyPoint>();
@@ -101,7 +103,7 @@ public class GripMain {
 		
 		BufferedImage rectangle;
 		
-		double measX, measY, objRadius, heading, pitch, distance;
+		double measX, measY, objRadius, heading, pitch, distance ,derivativeDistance;
 		
 		
 		int framesProcessed = 0;
@@ -175,17 +177,40 @@ public class GripMain {
 					bigBlobCount++;
 				}
 				
-				System.out.println(String.format("%5s: ( %8.2f, %8.2f, %8.2f),  [ %7.2f, %7.2f ] small: %5s big: %5s frequency: %5.2f%s", 
-													Integer.toString(framesProcessed), 
-													measX, 
-													measY, 
-													objRadius, 
-													heading, 
-													distance,
-													smallBlobCount,
-													bigBlobCount,
-													100*(((double)bigBlobCount)/((double)framesProcessed)),
-													"%"));
+				endTime = System.currentTimeMillis();
+				
+				timeTaken = endTime - startTime;
+				derivativeDistance = derivative.changeOfValue(distance, System.currentTimeMillis());
+				if(Math.abs(derivativeDistance) > 8) {
+					System.out.println(String.format("Reject:, %5s: ( %8.2f, %8.2f, %8.2f),  [ %7.2f, %7.2f ] small: %5s big: %5s frequency: %5.2f,dD/dt =  %.3f,time: %d",
+							Integer.toString(framesProcessed), 
+							measX, 
+							measY, 
+							objRadius, 
+							heading, 
+							distance,
+							smallBlobCount,
+							bigBlobCount,
+							100*((double)bigBlobCount)/((double)framesProcessed),
+							derivativeDistance,
+							timeTaken
+							));
+				}
+				else {
+				System.out.println(String.format("Accept:, %5s: ( %8.2f, %8.2f, %8.2f),  [ %7.2f, %7.2f ] small: %5s big: %5s frequency: %5.2f,dD/dt =  %.3f,time: %d", 
+							Integer.toString(framesProcessed), 
+							measX, 
+					        measY, 
+							objRadius, 
+							heading, 
+							distance,
+							smallBlobCount,
+							bigBlobCount,
+							100*((double)bigBlobCount)/((double)framesProcessed),
+							derivativeDistance,
+							timeTaken
+							));
+				}
 				//BufferedImage blurImage = projectImage.Mat2BufferedImage(blurOutput);
 				
 				//projectImage.displayImage(blurImage);
@@ -205,11 +230,6 @@ public class GripMain {
 				
 				projectImage.displayImage(rectangle);
 				
-				endTime = System.currentTimeMillis();
-				
-				timeTaken = endTime - startTime;
-				
-				System.out.println("That took " + timeTaken + "seconds");
 				
 				/*
 				imageCircle = blurOutput.clone();

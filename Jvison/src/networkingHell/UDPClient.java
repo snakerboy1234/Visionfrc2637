@@ -31,13 +31,17 @@ public class UDPClient {
 			String response = new String(incomingPacket.getData());
 			System.out.println("Server Response:" + response);
 			Thread.sleep(2000);
-		} catch (UnknownHostException e) {
+		} 
+		catch (UnknownHostException e) {
 			e.printStackTrace();
-		} catch (SocketException e) {
+		}
+		catch (SocketException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			e.printStackTrace();
-		} catch (InterruptedException e) {
+		}
+		catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
