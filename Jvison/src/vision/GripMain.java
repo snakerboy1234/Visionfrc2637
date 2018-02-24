@@ -19,6 +19,8 @@ public class GripMain {
 	private static final double PI = Math.PI;
 	private static final double RAD2DEG = 180.0 / PI;
 	private static final double DEG2RAD = 1.0 / RAD2DEG;
+	private static final String roboNetworkName = "172.22.11.2";
+	private static final int visionPort = 2637;
 
 	private static final double CUBE_DIAMETER_INCHES = 17;
 	private static final double VIEW_ANGLE_DIAGONAL_DEGREES = 78;
@@ -56,6 +58,7 @@ public class GripMain {
 		Mat squareToMat = new Mat();
 		
 		DerivativeOfVision derivative = new DerivativeOfVision();
+		UDPClient sendDataRoborio = new UDPClient(roboNetworkName, visionPort);
 		
 		//KeyPoint blobList;
 		//ArrayList<KeyPoint> blobList = new ArrayList<KeyPoint>();
@@ -65,12 +68,6 @@ public class GripMain {
 		VideoCapture cap = new VideoCapture();
 		
 		cap.open(0);
-		
-		
-		if(!cap.equals(0)) {
-			System.out.println("Error opening video file");
-			
-		}
 		
 		//int frameWidth = cap.get(CV_PROP_FRAME_WIDTH);
 		//int frameHeight = cap.get(CV_CAP_FRAME_HEIGHT);
@@ -206,6 +203,7 @@ public class GripMain {
 							heading, 
 							distance,
 							//smallBlobCount,
+							
 							//bigBlobCount,
 							//100*((double)bigBlobCount)/((double)framesProcessed),
 							derivativeDistance,
@@ -226,6 +224,7 @@ public class GripMain {
 				
 				projectImage.displayImage(rectangle);
 				
+				sendDataRoborio.sendVisionPacket(heading, distance);
 				
 				/*
 				imageCircle = blurOutput.clone();
