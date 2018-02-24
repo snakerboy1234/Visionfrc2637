@@ -23,6 +23,7 @@ public class GripMain {
 	private static final double CUBE_DIAMETER_INCHES = 17;
 	private static final double VIEW_ANGLE_DIAGONAL_DEGREES = 78;
 	private static final double VIEW_ANGLE_DIAGONAL_RADIANS = VIEW_ANGLE_DIAGONAL_DEGREES * DEG2RAD;
+	private static final double MAX_DERIVATIVE_THRESHOLD = 0.4;//more than twice 15 feet per second (inches/ms)
 	
 	private static final double MAX_DISTANCE = 120;
 
@@ -177,36 +178,36 @@ public class GripMain {
 					bigBlobCount++;
 				}
 				
-				endTime = System.currentTimeMillis();
-				
+				endTime = System.currentTimeMillis(); 
 				timeTaken = endTime - startTime;
 				derivativeDistance = derivative.changeOfValue(distance, System.currentTimeMillis());
-				if(Math.abs(derivativeDistance) > 8) {
-					System.out.println(String.format("Reject:, %5s: ( %8.2f, %8.2f, %8.2f),  [ %7.2f, %7.2f ] small: %5s big: %5s frequency: %5.2f,dD/dt =  %.3f,time: %d",
+				//all: %5s big: %5s frequency: %5.2f(for camera testing distance error)
+				if(Math.abs(derivativeDistance) > MAX_DERIVATIVE_THRESHOLD) {
+					System.out.println(String.format("Reject:, %5s: ( %8.2f, %8.2f, %8.2f),  [ %7.2f, %7.2f ],dD/dt =  %.3f,time: %d",
 							Integer.toString(framesProcessed), 
 							measX, 
 							measY, 
 							objRadius, 
 							heading, 
 							distance,
-							smallBlobCount,
-							bigBlobCount,
-							100*((double)bigBlobCount)/((double)framesProcessed),
+							//smallBlobCount,
+							//bigBlobCount,
+							//100*((double)bigBlobCount)/((double)framesProcessed),
 							derivativeDistance,
 							timeTaken
 							));
 				}
 				else {
-				System.out.println(String.format("Accept:, %5s: ( %8.2f, %8.2f, %8.2f),  [ %7.2f, %7.2f ] small: %5s big: %5s frequency: %5.2f,dD/dt =  %.3f,time: %d", 
+				System.out.println(String.format("Accept:, %5s: ( %8.2f, %8.2f, %8.2f),  [ %7.2f, %7.2f ],dD/dt =  %.3f,time: %d", 
 							Integer.toString(framesProcessed), 
 							measX, 
 					        measY, 
 							objRadius, 
 							heading, 
 							distance,
-							smallBlobCount,
-							bigBlobCount,
-							100*((double)bigBlobCount)/((double)framesProcessed),
+							//smallBlobCount,
+							//bigBlobCount,
+							//100*((double)bigBlobCount)/((double)framesProcessed),
 							derivativeDistance,
 							timeTaken
 							));
@@ -218,11 +219,6 @@ public class GripMain {
 				//Draw a circle
 			
 				blurOutput.copyTo(imageCircle);
-				
-				square.x = (int)measX;
-				square.y = (int)measY;
-				square.height = (int) objRadius;
-				square.width = (int) objRadius;
 				
 				org.opencv.imgproc.Imgproc.circle(imageCircle, new Point(measX, measY), (int)(objRadius), new Scalar(98, 244, 66));
 				
