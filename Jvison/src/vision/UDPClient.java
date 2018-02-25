@@ -34,13 +34,14 @@ public class UDPClient {
 	}
 	public void sendVisionPacket(double Heading, double Distance) {
 		try {
-		VisionObject visionObj = new VisionObject(Heading, Distance);
+		//VisionObject visionObj = new VisionObject(Heading, Distance);
 		
-		opStream.writeObject(visionObj);
-		
+		//opStream.writeObject(visionObj);
+		opStream.writeObject("hello world");
 		byte[] data = streamOutput.toByteArray();
-		DatagramPacket sendPacket = new DatagramPacket(data, data.length, robrioIPAddress, VisionPort);
 		
+		//byte[] data = streamOutput.toByteArray();
+		DatagramPacket sendPacket = new DatagramPacket(data, data.length, robrioIPAddress, VisionPort);
 		Socket.send(sendPacket);
 		}
 		catch(IOException e) {

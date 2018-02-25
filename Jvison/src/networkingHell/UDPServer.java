@@ -19,36 +19,28 @@ public class UDPServer {
 		try {
 			socket = new DatagramSocket(2637);
 			byte[] incomingData = new byte[1024];
-	
 
-			while (true) {
-				DatagramPacket incomingPacket = new DatagramPacket(incomingData, incomingData.length);
-				socket.receive(incomingPacket);
-				byte[] data = incomingPacket.getData();
-				ByteArrayInputStream in = new ByteArrayInputStream(data);
-				ObjectInputStream is = new ObjectInputStream(in);
-				try {
-					VisionObject visionObj = (VisionObject) is.readObject();
-					System.out.println("Received = "+visionObj);
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-				System.exit(0);
-			}
-
-			} catch (SocketException e) {
+			socket.receive(incomingPacket);
+			DatagramPacket incomingPacket = new DatagramPacket(incomingData, incomingData.length);
+			byte[] data = incomingPacket.getData();
+			ByteArrayInputStream in = new ByteArrayInputStream(data);
+			ObjectInputStream is = new ObjectInputStream(in);
+			try {
+				VisionObject visionObj = (VisionObject) is.readObject();
+				System.out.println("Received = " + visionObj);
+			} 
+			catch (ClassNotFoundException e) {
 				e.printStackTrace();
-			} catch (IOException i) {
+			}
+			} 
+			catch (SocketException e) {
+				e.printStackTrace();
+			} 
+			catch (IOException i) {
 				i.printStackTrace();
-			} catch (InterruptedException e) {
+			} 
+			catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-	
-
-	public static void main(String[] args) 
-	{
-		UDPServer server = new UDPServer();
-		server.createAndListenSocket();
-	}
 }
