@@ -17,7 +17,7 @@ public class UDPServer {
 
 	public void createAndListenSocket() {
 		try {
-			socket = new DatagramSocket(8765);
+			socket = new DatagramSocket(2637);
 			byte[] incomingData = new byte[1024];
 	
 
@@ -33,13 +33,6 @@ public class UDPServer {
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
-				InetAddress IPAddress = incomingPacket.getAddress();
-				int port = incomingPacket.getPort();
-				String reply = "Ack";
-				byte[] replyBytea = reply.getBytes();
-				DatagramPacket replyPacket = new DatagramPacket(replyBytea, replyBytea.length, IPAddress, port);
-				socket.send(replyPacket);
-				Thread.sleep(1000);
 				System.exit(0);
 			}
 

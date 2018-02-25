@@ -7,7 +7,7 @@ public class DerivativeOfVision extends GripMain{//fix later
 	private static double lastMeasuredTime;
 	private static boolean notFirstTime = false;
 	
-	public static double changeOfValue(double Distance, long currentTime) {
+	public double changeOfValue(double Distance, long currentTime) {
 		
 		if(notFirstTime) {
 			

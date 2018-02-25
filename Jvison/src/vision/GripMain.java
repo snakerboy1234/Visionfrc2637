@@ -8,10 +8,7 @@ import org.opencv.core.KeyPoint;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfKeyPoint;
 import org.opencv.core.Point;
-import org.opencv.core.Size;
 import org.opencv.videoio.VideoCapture;
-import org.opencv.videoio.VideoWriter;
-import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 
 public class GripMain {
@@ -26,13 +23,12 @@ public class GripMain {
 	private static final double VIEW_ANGLE_DIAGONAL_DEGREES = 78;
 	private static final double VIEW_ANGLE_DIAGONAL_RADIANS = VIEW_ANGLE_DIAGONAL_DEGREES * DEG2RAD;
 	private static final double MAX_DERIVATIVE_THRESHOLD = 0.4;//more than twice 15 feet per second (inches/ms)
-	
-	private static final double MAX_DISTANCE = 120;
 
 	public static long startTime;
 	public static long endTime;
 	public static long timeTaken;
 	
+	@SuppressWarnings("unused")
 	public static void main(String[] arg) {
 		
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -40,22 +36,13 @@ public class GripMain {
 		double legLenthIsosceles;
 		double heightIsosceles;
 		double hypotenuseSquared;
-		double distancePlaceHolder;
 		
 		//ImageWindow projectImage = new ImageWindow("Vision", ImageWindow.WINDOW_NORMAL);
 		//projectImage.setFrameLabelVisible(jframe, lbl);
 	
 		Improc projectImage = new Improc();
 		
-		/*
-		Imshow sizedShow = new Imshow("SizedFrame");
-		Imshow blurShow = new Imshow("BlurFrame");
-		Imshow circleShow = new Imshow("imageCircle");
-		Imshow blurCircle = new Imshow("blurCircle");
-			*/	
 		Mat imageCircle = new Mat();
-		Mat source;
-		Mat squareToMat = new Mat();
 		
 		DerivativeOfVision derivative = new DerivativeOfVision();
 		UDPClient sendDataRoborio = new UDPClient(roboNetworkName, visionPort);
@@ -69,11 +56,6 @@ public class GripMain {
 		
 		cap.open(0);
 		
-		//int frameWidth = cap.get(CV_PROP_FRAME_WIDTH);
-		//int frameHeight = cap.get(CV_CAP_FRAME_HEIGHT);
-		
-		//System.out.println("Frame: " + frameWidth + ", " + frameHeight);
-		
 		int sizedFrameWidth = 480;
 		
 		int sizedFrameHeight = 270;
@@ -83,16 +65,11 @@ public class GripMain {
 		legLenthIsosceles = Math.sqrt(hypotenuseSquared/(2*(1.0-Math.cos(VIEW_ANGLE_DIAGONAL_DEGREES))));
 		heightIsosceles = legLenthIsosceles*Math.cos(0.5*VIEW_ANGLE_DIAGONAL_RADIANS);
 		
-		VideoWriter video = new VideoWriter("outcpp.avi", VideoWriter.fourcc('M','J','P','G'), 10, new Size(sizedFrameWidth*4, sizedFrameHeight*4));
-		
 		// Create the square that will be used to outline our blobs
 		
-		
-		Rect square = new Rect((int) 1,(int) 1,(int) 1,(int) 1);
 		//Mat squareImg  = new Mat();
 		//Mat squareToMat = new Mat(squareImg,square);
 		
-		Mat sizedFrame;
 		Mat blurOutput;
 		Mat frame;
 		
@@ -101,7 +78,7 @@ public class GripMain {
 		
 		BufferedImage rectangle;
 		
-		double measX, measY, objRadius, heading, pitch, distance ,derivativeDistance;
+		double measX, measY, objRadius, heading, distance ,derivativeDistance;
 		
 		
 		int framesProcessed = 0;
@@ -135,7 +112,7 @@ public class GripMain {
 			
 			detectYellowCube.process(frame);
 			
-			sizedFrame = detectYellowCube.resizeImageOutput();
+			detectYellowCube.resizeImageOutput();
 			blurOutput = detectYellowCube.blurOutput();
 			
 			blobList = detectYellowCube.findBlobsOutput();
@@ -154,18 +131,8 @@ public class GripMain {
 				
 				heading = RAD2DEG * Math.atan(opposite/adjacent);
 				opposite = measY - 0.5*sizedFrameHeight;
-				pitch = RAD2DEG *Math.atan(opposite/adjacent);
 				distance = CUBE_DIAMETER_INCHES * heightIsosceles/(objRadius);
 				
-				//System.out.println("( " + framesProcessed + " )( " + measX + ", " + measY + " )," + objRadius + " [ " + heading + ", " + distance + " ]");
-				/*
-				System.out.println(String.format("%5s: ( %8.2f, %8.2f, %8.2f),  [ %7.2f, %7.2f ]", Integer.toString(framesProcessed), 
-																									measX, 
-																									measY, 
-																									objRadius, 
-																									heading, 
-																									distance));
-				*/
 				if (blob.size < 10)
 				{
 					smallBlobCount++;
@@ -203,7 +170,6 @@ public class GripMain {
 							heading, 
 							distance,
 							//smallBlobCount,
-							
 							//bigBlobCount,
 							//100*((double)bigBlobCount)/((double)framesProcessed),
 							derivativeDistance,
