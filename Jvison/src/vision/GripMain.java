@@ -15,73 +15,80 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 
 public class GripMain {
-
+	
+	/*
+	 * These constants in the code are used in the mathematics
+	 * for finding the blocks distance from the cube which are
+	 * angular
+	 */
+	
 	private static final double PI = Math.PI;
 	private static final double RAD2DEG = 180.0 / PI;
 	private static final double DEG2RAD = 1.0 / RAD2DEG;
-
+	
+	/*
+	 * These constants in the code are used in the mathematics
+	 * for finding the blocks distance from the cube which are 
+	 * non angular. 
+	 */
+	
 	private static final double CUBE_DIAMETER_INCHES = 17;
 	private static final double VIEW_ANGLE_DIAGONAL_DEGREES = 78;
 	private static final double VIEW_ANGLE_DIAGONAL_RADIANS = VIEW_ANGLE_DIAGONAL_DEGREES * DEG2RAD;
 	
-	private static final double MAX_DISTANCE = 120;
-
+	/*Timer variables
+	 * This set of variables is used for a timer in the code.
+	 * This allows the editor of the code to know how long it
+	 * is taking for a frame to be processed within it.
+	 */
+	
 	public static long startTime;
 	public static long endTime;
 	public static long timeTaken;
 	
 	public static void main(String[] arg) {
 		
+		//This line of code loads the opencv library
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		
 		double legLenthIsosceles;
 		double heightIsosceles;
 		double hypotenuseSquared;
-		double distancePlaceHolder;
 		
-		//ImageWindow projectImage = new ImageWindow("Vision", ImageWindow.WINDOW_NORMAL);
-		//projectImage.setFrameLabelVisible(jframe, lbl);
-	
-		Improc projectImage = new Improc();
-		
-		/*
-		Imshow sizedShow = new Imshow("SizedFrame");
-		Imshow blurShow = new Imshow("BlurFrame");
-		Imshow circleShow = new Imshow("imageCircle");
-		Imshow blurCircle = new Imshow("blurCircle");
-			*/	
 		Mat imageCircle = new Mat();
 		Mat source;
 		Mat squareToMat = new Mat();
 		
+		//Defines the derivative class 
 		DerivativeOfVision derivative = new DerivativeOfVision();
 		
-		//KeyPoint blobList;
-		//ArrayList<KeyPoint> blobList = new ArrayList<KeyPoint>();
-		
+		//Defines the yellow cube class
 		GripPipeline detectYellowCube = new GripPipeline();
 		
+		//Defines the camera
 		VideoCapture cap = new VideoCapture();
 		
+		//Starts the camera at port zero
 		cap.open(0);
 		
-		
+		//If the camera is unable to open this line shoots back an error.
+		/*
+		 * Currently no matter what this line activates and I don't
+		 * know why.
+		 */
 		if(!cap.equals(0)) {
 			System.out.println("Error opening video file");
 			
 		}
 		
-		//int frameWidth = cap.get(CV_PROP_FRAME_WIDTH);
-		//int frameHeight = cap.get(CV_CAP_FRAME_HEIGHT);
-		
-		//System.out.println("Frame: " + frameWidth + ", " + frameHeight);
-		
+		//The following two integers are used to define the resolution we will be running at.
 		int sizedFrameWidth = 480;
-		
 		int sizedFrameHeight = 270;
 		
+		/*
+		 * The following equation below is used to convert
+		 */
 		hypotenuseSquared =  sizedFrameWidth*sizedFrameWidth + sizedFrameHeight*sizedFrameHeight;
-		
 		legLenthIsosceles = Math.sqrt(hypotenuseSquared/(2*(1.0-Math.cos(VIEW_ANGLE_DIAGONAL_DEGREES))));
 		heightIsosceles = legLenthIsosceles*Math.cos(0.5*VIEW_ANGLE_DIAGONAL_RADIANS);
 		
@@ -226,18 +233,6 @@ public class GripMain {
 				
 				org.opencv.imgproc.Imgproc.circle(imageCircle, new Point(measX, measY), (int)(objRadius), new Scalar(98, 244, 66));
 				
-				rectangle = Improc.Mat2BufferedImage(imageCircle);
-				
-				projectImage.displayImage(rectangle);
-				
-				
-				/*
-				imageCircle = blurOutput.clone();
-				Mat square1 = new Mat(imageCircle,square);
-				BufferedImage circle2 = projectImage.Mat2BufferedImage(imageCircle);
-				projectImage.displayImage(circle2);
-				//blurCircle.showImage(imageCircle);
-				 */
 			}	
 			else {
 				System.out.println("( " + framesProcessed + " ) No Blobs");
