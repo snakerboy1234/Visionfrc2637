@@ -16,14 +16,14 @@ public class GripMain {
 	private static final double PI = Math.PI;
 	private static final double RAD2DEG = 180.0 / PI;
 	private static final double DEG2RAD = 1.0 / RAD2DEG;
-	private static final String roboNetworkName = "172.22.11.2";
-	private static final int visionPort = 2637;
-
 	private static final double CUBE_DIAMETER_INCHES = 17;
 	private static final double VIEW_ANGLE_DIAGONAL_DEGREES = 78;
 	private static final double VIEW_ANGLE_DIAGONAL_RADIANS = VIEW_ANGLE_DIAGONAL_DEGREES * DEG2RAD;
 	private static final double MAX_DERIVATIVE_THRESHOLD = 0.4;//more than twice 15 feet per second (inches/ms)
 
+	private static final String roboNetworkName = "172.22.11.2";
+	private static final int visionPort = 2637;
+	
 	public static long startTime;
 	public static long endTime;
 	public static long timeTaken;
@@ -36,54 +36,37 @@ public class GripMain {
 		double legLenthIsosceles;
 		double heightIsosceles;
 		double hypotenuseSquared;
+		double measX;
+		double measY;
+		double objRadius;
+		double heading;
+		double distance; 
+		double derivativeDistance;
 		
-		//ImageWindow projectImage = new ImageWindow("Vision", ImageWindow.WINDOW_NORMAL);
-		//projectImage.setFrameLabelVisible(jframe, lbl);
+		int sizedFrameWidth = 480;
+		int sizedFrameHeight = 270;
+		int framesProcessed = 0;
+		int smallBlobCount = 0;
+		int bigBlobCount = 0;
 	
 		Improc projectImage = new Improc();
-		
 		Mat imageCircle = new Mat();
-		
 		DerivativeOfVision derivative = new DerivativeOfVision();
 		UDPClient sendDataRoborio = new UDPClient(roboNetworkName, visionPort);
-		
-		//KeyPoint blobList;
-		//ArrayList<KeyPoint> blobList = new ArrayList<KeyPoint>();
-		
 		GripPipeline detectYellowCube = new GripPipeline();
-		
 		VideoCapture cap = new VideoCapture();
 		
 		cap.open(0);
 		
-		int sizedFrameWidth = 480;
-		
-		int sizedFrameHeight = 270;
-		
 		hypotenuseSquared =  sizedFrameWidth*sizedFrameWidth + sizedFrameHeight*sizedFrameHeight;
-		
 		legLenthIsosceles = Math.sqrt(hypotenuseSquared/(2*(1.0-Math.cos(VIEW_ANGLE_DIAGONAL_DEGREES))));
 		heightIsosceles = legLenthIsosceles*Math.cos(0.5*VIEW_ANGLE_DIAGONAL_RADIANS);
-		
-		// Create the square that will be used to outline our blobs
-		
-		//Mat squareImg  = new Mat();
-		//Mat squareToMat = new Mat(squareImg,square);
-		
+				
 		Mat blurOutput;
 		Mat frame;
-		
 		MatOfKeyPoint blobList;
 		KeyPoint[] blobArray;
-		
-		BufferedImage rectangle;
-		
-		double measX, measY, objRadius, heading, distance ,derivativeDistance;
-		
-		
-		int framesProcessed = 0;
-		int smallBlobCount = 0;
-		int bigBlobCount = 0;
+		BufferedImage rectangle;		
 		
 		while(true) {
 			
@@ -106,13 +89,11 @@ public class GripMain {
 				continue;
 			}
 			
-			//video.write(frame);
-			
 			++framesProcessed;
 			
 			detectYellowCube.process(frame);
-			
 			detectYellowCube.resizeImageOutput();
+			
 			blurOutput = detectYellowCube.blurOutput();
 			
 			blobList = detectYellowCube.findBlobsOutput();
@@ -175,6 +156,7 @@ public class GripMain {
 							derivativeDistance,
 							timeTaken
 							));
+							sendDataRoborio.sendVisionPacket(heading, distance);
 				}
 				//BufferedImage blurImage = projectImage.Mat2BufferedImage(blurOutput);
 				
@@ -189,8 +171,6 @@ public class GripMain {
 				rectangle = Improc.Mat2BufferedImage(imageCircle);
 				
 				projectImage.displayImage(rectangle);
-				
-				sendDataRoborio.sendVisionPacket(heading, distance);
 				
 				/*
 				imageCircle = blurOutput.clone();
@@ -214,10 +194,8 @@ public class GripMain {
 	{
 		KeyPoint largest = blobList[0];
 		
-		for (KeyPoint kp : blobList)
-		{
-			if (largest.size < kp.size)
-			{
+		for (KeyPoint kp : blobList){
+			if (largest.size < kp.size){
 				largest = kp;
 			}
 		}
