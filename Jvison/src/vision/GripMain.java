@@ -12,10 +12,17 @@ import org.opencv.videoio.VideoCapture;
 import org.opencv.core.Scalar;
 
 public class GripMain {
-
+	
+	/*
+	 * These constants in the code are used in the mathematics
+	 * for finding the blocks distance from the cube which are
+	 * angular
+	 */
+	
 	private static final double PI = Math.PI;
 	private static final double RAD2DEG = 180.0 / PI;
 	private static final double DEG2RAD = 1.0 / RAD2DEG;
+
 	private static final double CUBE_DIAMETER_INCHES = 17;
 	private static final double VIEW_ANGLE_DIAGONAL_DEGREES = 78;
 	private static final double VIEW_ANGLE_DIAGONAL_RADIANS = VIEW_ANGLE_DIAGONAL_DEGREES * DEG2RAD;
@@ -31,6 +38,7 @@ public class GripMain {
 	@SuppressWarnings("unused")
 	public static void main(String[] arg) {
 		
+		//This line of code loads the opencv library
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		
 		double legLenthIsosceles;
@@ -56,8 +64,9 @@ public class GripMain {
 		GripPipeline detectYellowCube = new GripPipeline();
 		VideoCapture cap = new VideoCapture();
 		
+		//Starts the camera at port zero
 		cap.open(0);
-		
+
 		hypotenuseSquared =  sizedFrameWidth*sizedFrameWidth + sizedFrameHeight*sizedFrameHeight;
 		legLenthIsosceles = Math.sqrt(hypotenuseSquared/(2*(1.0-Math.cos(VIEW_ANGLE_DIAGONAL_DEGREES))));
 		heightIsosceles = legLenthIsosceles*Math.cos(0.5*VIEW_ANGLE_DIAGONAL_RADIANS);
@@ -182,6 +191,7 @@ public class GripMain {
 				projectImage.displayImage(circle2);
 				//blurCircle.showImage(imageCircle);
 				 */
+
 			}	
 			else {
 				System.out.println("( " + framesProcessed + " ) No Blobs");
