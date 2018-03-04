@@ -103,6 +103,7 @@ public class GripMainTape {
 			
 			sizedFrame = detectReflectiveTape.resizeImageOutput();
 			contourOutput = detectReflectiveTape.findContoursOutput();
+			distance = ;
 			
 			
 			
