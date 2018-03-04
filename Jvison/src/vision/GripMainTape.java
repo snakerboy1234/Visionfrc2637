@@ -21,7 +21,8 @@ public class GripMainTape {
 	private static final double RAD2DEG = 180.0 / PI;
 	private static final double DEG2RAD = 1.0 / RAD2DEG;
 
-	private static final double CUBE_DIAMETER_INCHES = 17;
+	private static final double TAPE_HEIGHT_INCHES = 16;
+	private static final double TAPE_WIDTH_INCHES = 4;
 	private static final double VIEW_ANGLE_DIAGONAL_DEGREES = 78;
 	private static final double VIEW_ANGLE_DIAGONAL_RADIANS = VIEW_ANGLE_DIAGONAL_DEGREES * DEG2RAD;
 	
@@ -67,12 +68,12 @@ public class GripMainTape {
 		int sizedFrameHeight = 270;
 		
 		//Change the math in order to get measurements for midpoint
-		/*
+		
 		hypotenuseSquared =  sizedFrameWidth*sizedFrameWidth + sizedFrameHeight*sizedFrameHeight;
 		
 		legLenthIsosceles = Math.sqrt(hypotenuseSquared/(2*(1.0-Math.cos(VIEW_ANGLE_DIAGONAL_DEGREES))));
 		heightIsosceles = legLenthIsosceles*Math.cos(0.5*VIEW_ANGLE_DIAGONAL_RADIANS);
-		*/
+		
 		
 		VideoWriter video = new VideoWriter("outcpp.avi", VideoWriter.fourcc('M','J','P','G'), 10, new Size(sizedFrameWidth*4, sizedFrameHeight*4));
 		

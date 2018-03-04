@@ -21,7 +21,7 @@ public class GripMain {
 	private static final double VIEW_ANGLE_DIAGONAL_RADIANS = VIEW_ANGLE_DIAGONAL_DEGREES * DEG2RAD;
 	private static final double MAX_DERIVATIVE_THRESHOLD = 0.4;//more than twice 15 feet per second (inches/ms)
 
-	private static final String roboNetworkName = "172.22.11.2";
+	private static final String roboNetworkName = "10.26.37.2";	//"172.22.11.2";
 	private static final int visionPort = 2637;
 	
 	public static long startTime;
@@ -91,6 +91,9 @@ public class GripMain {
 			
 			++framesProcessed;
 			
+			//We need to catch exceptions during this process function to ensure we keep 
+			//running even if there is a strange exception.
+			//I have seen an exception occur in the blur detection pipeline
 			detectYellowCube.process(frame);
 			detectYellowCube.resizeImageOutput();
 			
